@@ -26,6 +26,14 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "i.imgur.com",
+      },
+      {
+        protocol: "https",
+        hostname: "mercur-connect.s3.eu-central-1.amazonaws.com",
+      },
+      {
+        protocol: "https",
         hostname: "medusa-public-images.s3.eu-west-1.amazonaws.com",
       },
       {

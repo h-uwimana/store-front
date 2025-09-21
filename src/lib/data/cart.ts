@@ -3,7 +3,7 @@
 import { sdk } from "@lib/config"
 import medusaError from "@lib/util/medusa-error"
 import { HttpTypes } from "@medusajs/types"
-import { revalidateTag } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
 import { redirect } from "next/navigation"
 import {
   getAuthHeaders,
@@ -399,7 +399,7 @@ export async function placeOrder(cartId?: string) {
     ...(await getAuthHeaders()),
   }
 
-  const cartRes = await sdk.store.cart
+  const cartRes: any = await sdk.store.cart
     .complete(id, {}, headers)
     .then(async (cartRes) => {
       const cartCacheTag = await getCacheTag("carts")
@@ -408,18 +408,14 @@ export async function placeOrder(cartId?: string) {
     })
     .catch(medusaError)
 
-  if (cartRes?.type === "order") {
-    const countryCode =
-      cartRes.order.shipping_address?.country_code?.toLowerCase()
-
-    const orderCacheTag = await getCacheTag("orders")
-    revalidateTag(orderCacheTag)
-
+  if (cartRes?.order_set) {
+    revalidatePath("/user/reviews")
+    revalidatePath("/user/orders")
     removeCartId()
-    redirect(`/${countryCode}/order/${cartRes?.order.id}/confirmed`)
+    redirect(`/order/${cartRes?.order_set.orders[0].id}/confirmed`)
   }
 
-  return cartRes.cart
+  return cartRes.order_set.cart
 }
 
 /**
