@@ -1,5 +1,6 @@
 'use client'
 import { Fragment, useState } from 'react'
+import { useParams } from "next/navigation"
 import {
   Dialog,
   DialogBackdrop,
@@ -22,9 +23,9 @@ import {
 import { Bars3Icon, MagnifyingGlassIcon, ShoppingBagIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { StoreRegion } from "@medusajs/types"
 import CountrySelect from '@modules/layout/components/list-regions'
+import MobileMenu from "@modules/layout/templates/nav/components/popover"
 
-
-const navigation = {
+let navigation = {
   categories: [
     {
       id: 'women',
@@ -143,25 +144,28 @@ const navigation = {
     },
   ],
   pages: [
-    { name: 'Company', href: '#' },
-    { name: 'Stores', href: '#' },
+    { name: 'Company', href: '/' },
+    { name: 'Store', href: " /"},
   ],
 }
 
-export default   function Nav(props: {region: StoreRegion[]} ) {
+export default function Nav(props: {region: StoreRegion[]} ) {
   const [open, setOpen] = useState(false)
-  const [selected, setSelected] = useState(props.region[3])
-  // const [selectedPerson, setSelectedPerson] = useState(props.region)
+  const countryCode  = useParams().countryCode
+  navigation.pages[1].href = `/${countryCode}/store`
   return (
     <div className="bg-white">
-      {/* Mobile menu */}
       <Dialog open={open} onClose={setOpen} className="relative z-40 lg:hidden">
         <DialogBackdrop
           transition
           className="fixed inset-0 bg-black/25 transition-opacity duration-300 ease-linear data-closed:opacity-0"
         />
+        <MobileMenu
+          navigation={navigation}
+          setOpen={setOpen} open={open}
+          region={props.region}
+        />
       </Dialog>
-
       <header className="relative bg-white">
         <nav aria-label="Top" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="border-b border-gray-200">
@@ -182,7 +186,7 @@ export default   function Nav(props: {region: StoreRegion[]} ) {
                   <span className="sr-only">Your Company</span>
                   <img
                     alt=""
-                    src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
+                    src="home"
                     className="h-8 w-auto"
                   />
                 </a>
@@ -283,9 +287,6 @@ export default   function Nav(props: {region: StoreRegion[]} ) {
                 <div className="hidden lg:ml-8 lg:flex">
                   <CountrySelect regions={props.region} />
                 </div>
-
-
-
                 {/* Search */}
                 <div className="flex lg:ml-6">
                   <a href="#" className="p-2 text-gray-400 hover:text-gray-500">
